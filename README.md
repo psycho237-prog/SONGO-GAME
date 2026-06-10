@@ -5,7 +5,7 @@
 ---
 
 ## 1. Fonctionnement du Jeu (Principe)
-![Aperçu du jeu Songo](file:/SONGO_GAME/songo_screenshot.png)
+![Aperçu du jeu Songo](songo_screenshot.png)
 
 Le Songo est un jeu de semailles traditionnel africain (similaire à l'Awalé). Il oppose deux joueurs disposant chacun d'un camp de 7 trous. Au début de la partie, chaque trou contient 5 graines (total de 70 graines).
 Le but est de capturer le maximum de graines. La partie s'achève lorsqu'il reste moins de 10 graines ou lorsqu'un joueur obtient 40 graines ou plus.
