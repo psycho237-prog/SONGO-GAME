@@ -7,7 +7,11 @@ header('Content-Type: application/json');
 
 // ATTENTION POUR LINUX (XAMPP) : il faut donner les droits d'ecriture au fichier state.json !
 // commande a taper dans le terminal: chmod 777 state.json
-$fichier_etat = '/tmp/songo_state.json';
+
+$salle = isset($_GET['room']) ? preg_replace('/[^a-zA-Z0-9_-]/', '', $_GET['room']) : 'defaut';
+if ($salle == '') $salle = 'defaut';
+
+$fichier_etat = '/tmp/songo_state_' . md5($salle) . '.json';
 
 // Si c'est la premiere fois on cree la partie
 if (!file_exists($fichier_etat) || (isset($_GET['action']) && $_GET['action'] == 'reset')) {

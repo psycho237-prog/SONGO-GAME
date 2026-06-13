@@ -88,9 +88,10 @@
     <audio id="clickSound" src="../assets/click.wav" preload="auto"></audio>
     
     <div id="choix_joueur">
-        <h2>Qui es-tu ?</h2>
-        <button class="bouton_choix" onclick="choisirJoueur(0)">Je suis Joueur 1 (Bas)</button>
-        <button class="bouton_choix" onclick="choisirJoueur(1)">Je suis Joueur 2 (Haut)</button>
+        <h2>Rejoindre une partie</h2>
+        <input type="text" id="nom_salle" placeholder="Nom de la salle (ex: 123)" style="padding:10px; font-size:18px; margin-bottom: 15px; border: 2px solid teal; border-radius: 5px;"><br>
+        <button class="bouton_choix" onclick="choisirJoueur(0)">Joueur 1 (Bas)</button>
+        <button class="bouton_choix" onclick="choisirJoueur(1)">Joueur 2 (Haut)</button>
     </div>
 
     <div id="zone_jeu" style="display:none;">
@@ -120,6 +121,7 @@
         // Auteur: ONANA GREGOIRE LEGRAND | Matricule: 24G2060
         
         var mon_id_joueur = -1; // pas encore choisi
+        var nom_salle = "";
 
         // Fonction pour demarrer la musique
         function demarrerMusique() {
@@ -128,24 +130,30 @@
         }
 
         function choisirJoueur(id) {
+            nom_salle = document.getElementById('nom_salle').value.trim();
+            if(nom_salle === "") {
+                alert("Veuillez entrer un nom de salle !");
+                return;
+            }
+
             mon_id_joueur = id;
             document.getElementById('choix_joueur').style.display = 'none';
             document.getElementById('zone_jeu').style.display = 'block';
             
             if(id == 0) {
-                document.getElementById('mon_role').innerHTML = "Joueur 1 (En Bas)";
+                document.getElementById('mon_role').innerHTML = "Joueur 1 (En Bas) | Salle : " + nom_salle;
             } else {
-                document.getElementById('mon_role').innerHTML = "Joueur 2 (En Haut)";
+                document.getElementById('mon_role').innerHTML = "Joueur 2 (En Haut) | Salle : " + nom_salle;
             }
             
-            // on lance la requete ajax en boucle tres vite (200ms) pour reduire la latence
-            setInterval(demanderEtatAuServeur, 200);
+            // on lance la requete ajax en boucle (1000ms pour eviter de surcharger Vercel)
+            setInterval(demanderEtatAuServeur, 1000);
             demanderEtatAuServeur();
         }
 
         function recommencer() {
             var requete = new XMLHttpRequest();
-            requete.open("GET", "../api/server.php?action=reset", true);
+            requete.open("GET", "../api/server.php?action=reset&room=" + encodeURIComponent(nom_salle), true);
             requete.onload = function() {
                 demanderEtatAuServeur();
             };
@@ -160,7 +168,7 @@
             
             var requete = new XMLHttpRequest();
             // on envoie notre coup au php
-            requete.open("GET", "../api/server.php?action=jouer&trou=" + index_trou + "&joueur=" + mon_id_joueur, true);
+            requete.open("GET", "../api/server.php?action=jouer&trou=" + index_trou + "&joueur=" + mon_id_joueur + "&room=" + encodeURIComponent(nom_salle), true);
             requete.onload = function() {
                 var reponse = JSON.parse(requete.responseText);
                 if(reponse.erreur) {
@@ -179,7 +187,7 @@
         function demanderEtatAuServeur() {
             // on utilise XMLHttpRequest (AJAX classique pour faire "etudiant") plutot que fetch
             var xhr = new XMLHttpRequest();
-            xhr.open("GET", "../api/server.php?action=recuperer_etat", true);
+            xhr.open("GET", "../api/server.php?action=recuperer_etat&room=" + encodeURIComponent(nom_salle), true);
             xhr.onload = function() {
                 if(xhr.status == 200) {
                     var donnees = JSON.parse(xhr.responseText);
