@@ -86,6 +86,13 @@
     <!-- Bouton pour lancer la musique de fond (les navigateurs bloquent la lecture auto) -->
     <button class="btn-musique" onclick="demarrerMusique()">🎵 Lancer la musique africaine</button>
     
+    <div style="margin-bottom: 15px;">
+        <label style="font-weight: bold; font-size: 18px; color: #8b4513; cursor: pointer;">
+            <input type="checkbox" id="mode_ordinateur" onchange="changerMode(this.checked)" style="transform: scale(1.5); margin-right: 10px; cursor: pointer;"> 
+            Jouer contre l'ordinateur (Le Joueur 2 sera l'IA)
+        </label>
+    </div>
+
     <h2 id="info_tour">Tour: Joueur 1 (En Bas)</h2>
 
     <!-- Fichiers audios -->
@@ -122,6 +129,32 @@
         
         // pour calculer les prises on a besoin du sens inverse
         var trou_precedent = [1, 2, 3, 4, 5, 6, 13, 0, 7, 8, 9, 10, 11, 12];
+
+        var mode_ordinateur = false;
+
+        function changerMode(actif) {
+            mode_ordinateur = actif;
+            if(mode_ordinateur && joueur_actuel == 1) {
+                setTimeout(jouer_ordinateur, 800);
+            }
+            dessiner_plateau();
+        }
+
+        function jouer_ordinateur() {
+            if(joueur_actuel != 1) return;
+            
+            // on cherche tous les trous valides pour l'ordinateur
+            var trous_valides = [];
+            for(var i=7; i<=13; i++) {
+                if(plateau[i] > 0) trous_valides.push(i);
+            }
+            
+            if(trous_valides.length > 0) {
+                // Intelligence artificielle simple (aléatoire)
+                var choix = trous_valides[Math.floor(Math.random() * trous_valides.length)];
+                jouer(choix);
+            }
+        }
 
         // Fonction pour demarrer la musique (a cause de la securite du navigateur)
         function demarrerMusique() {
@@ -256,6 +289,11 @@
             }
             
             dessiner_plateau();
+
+            // Si c'est au tour de l'ordi
+            if(joueur_actuel == 1 && mode_ordinateur) {
+                setTimeout(jouer_ordinateur, 800);
+            }
         }
 
         // Fonction pour afficher a lecran
@@ -270,12 +308,15 @@
             for(var i=13; i>=7; i--) {
                 var div_trou = document.createElement("div");
                 div_trou.className = "trou";
-                if(joueur_actuel == 0) div_trou.className += " bloque";
+                if(joueur_actuel == 0 || mode_ordinateur) div_trou.className += " bloque";
                 div_trou.innerHTML = plateau[i];
                 
                 // une closure pour garder la valeur de i
                 (function(index) {
-                    div_trou.onclick = function() { jouer(index); }
+                    div_trou.onclick = function() { 
+                        if(mode_ordinateur) return; // l'ordinateur joue seul
+                        jouer(index); 
+                    }
                 })(i);
                 
                 div_haut.appendChild(div_trou);
