@@ -100,6 +100,11 @@
         
         <div id="message_erreur"></div>
 
+        <div style="margin-bottom: 20px;">
+            <button id="btn_pause" class="btn-musique" style="background-color: #f39c12; display:inline-block;" onclick="togglePause()">⏸ Pause</button>
+            <button id="btn_abandon" class="btn-musique" style="background-color: #c0392b; display:inline-block;" onclick="abandonner()">🏳️ Abandonner</button>
+        </div>
+
         <div class="le_plateau">
             <div class="ligne" id="ligne_haut"></div>
             <div class="ligne" id="ligne_bas"></div>
@@ -174,6 +179,20 @@
             requete.send();
         }
 
+        function togglePause() {
+            var requete = new XMLHttpRequest();
+            requete.open("GET", "../api/server.php?action=pause&room=" + encodeURIComponent(nom_salle), true);
+            requete.onload = function() { demanderEtatAuServeur(); };
+            requete.send();
+        }
+
+        function abandonner() {
+            var requete = new XMLHttpRequest();
+            requete.open("GET", "../api/server.php?action=abandonner&joueur=" + mon_id_joueur + "&room=" + encodeURIComponent(nom_salle), true);
+            requete.onload = function() { demanderEtatAuServeur(); };
+            requete.send();
+        }
+
         function cliquerTrou(index_trou) {
             // Jouer le son du clic
             var clic = document.getElementById("clickSound");
@@ -228,7 +247,7 @@
                 var div_trou = document.createElement("div");
                 div_trou.className = "trou";
                 
-                if(c_est_mon_tour == false || mon_id_joueur != 1) {
+                if(c_est_mon_tour == false || mon_id_joueur != 1 || etat.en_pause) {
                     div_trou.className += " bloque";
                 }
                 
@@ -248,7 +267,7 @@
                 var div_trou = document.createElement("div");
                 div_trou.className = "trou";
                 
-                if(c_est_mon_tour == false || mon_id_joueur != 0) {
+                if(c_est_mon_tour == false || mon_id_joueur != 0 || etat.en_pause) {
                     div_trou.className += " bloque";
                 }
                 
@@ -268,6 +287,9 @@
             document.getElementById('score_j2').innerHTML = etat.les_scores[1];
             
             // on met le tour
+            var btn_pause = document.getElementById("btn_pause");
+            var btn_abandon = document.getElementById("btn_abandon");
+
             if(etat.le_gagnant !== null) {
                 var txt = "Égalité !";
                 if(etat.le_gagnant == 0) txt = "Le Joueur 1 (Bas) gagne !";
@@ -276,14 +298,28 @@
                 document.getElementById('info_tour').innerHTML = "🏆 JEU TERMINÉ : " + txt;
                 document.getElementById('info_tour').style.color = "red";
                 document.getElementById('btn_rejouer').style.display = "inline-block";
+                btn_pause.style.display = "none";
+                btn_abandon.style.display = "none";
             } else {
-                document.getElementById('info_tour').style.color = "#008080";
                 document.getElementById('btn_rejouer').style.display = "none";
+                btn_pause.style.display = "inline-block";
+                btn_abandon.style.display = "inline-block";
 
-                if(etat.joueur_qui_joue == 0) {
-                    document.getElementById('info_tour').innerHTML = "C'est au Joueur 1 (Bas) de jouer";
+                if (etat.en_pause) {
+                    document.getElementById('info_tour').style.color = "#f39c12";
+                    document.getElementById('info_tour').innerHTML = "⏸ JEU EN PAUSE";
+                    btn_pause.innerHTML = "▶️ Reprendre";
+                    btn_pause.style.backgroundColor = "#27ae60";
                 } else {
-                    document.getElementById('info_tour').innerHTML = "C'est au Joueur 2 (Haut) de jouer";
+                    document.getElementById('info_tour').style.color = "#008080";
+                    btn_pause.innerHTML = "⏸ Pause";
+                    btn_pause.style.backgroundColor = "#f39c12";
+
+                    if(etat.joueur_qui_joue == 0) {
+                        document.getElementById('info_tour').innerHTML = "C'est au Joueur 1 (Bas) de jouer";
+                    } else {
+                        document.getElementById('info_tour').innerHTML = "C'est au Joueur 2 (Haut) de jouer";
+                    }
                 }
             }
         }

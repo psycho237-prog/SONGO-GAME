@@ -19,7 +19,8 @@ if (!file_exists($fichier_etat) || (isset($_GET['action']) && $_GET['action'] ==
         "le_plateau" => array(5,5,5,5,5,5,5, 5,5,5,5,5,5,5),
         "les_scores" => array(0, 0),
         "joueur_qui_joue" => 0, // 0 = j1(bas), 1 = j2(haut)
-        "le_gagnant" => null
+        "le_gagnant" => null,
+        "en_pause" => false
     );
     
     file_put_contents($fichier_etat, json_encode($etat_initial));
@@ -40,6 +41,24 @@ if (isset($_GET['action']) && $_GET['action'] == 'recuperer_etat') {
     exit;
 }
 
+// Quand on met en pause
+if (isset($_GET['action']) && $_GET['action'] == 'pause') {
+    $etat_jeu['en_pause'] = isset($etat_jeu['en_pause']) ? !$etat_jeu['en_pause'] : true;
+    file_put_contents($fichier_etat, json_encode($etat_jeu));
+    echo json_encode($etat_jeu);
+    exit;
+}
+
+// Quand on abandonne
+if (isset($_GET['action']) && $_GET['action'] == 'abandonner') {
+    $id_joueur = isset($_GET['joueur']) ? intval($_GET['joueur']) : 0;
+    $etat_jeu['le_gagnant'] = ($id_joueur == 0) ? 1 : 0;
+    $etat_jeu['en_pause'] = false;
+    file_put_contents($fichier_etat, json_encode($etat_jeu));
+    echo json_encode($etat_jeu);
+    exit;
+}
+
 // quand un joueur clique sur un trou
 if (isset($_GET['action']) && $_GET['action'] == 'jouer') {
     
@@ -54,6 +73,11 @@ if (isset($_GET['action']) && $_GET['action'] == 'jouer') {
 
     if ($id_joueur != $etat_jeu['joueur_qui_joue']) {
         echo json_encode(array("erreur" => "Doucement, ce n'est pas ton tour !")); 
+        exit;
+    }
+
+    if (isset($etat_jeu['en_pause']) && $etat_jeu['en_pause'] == true) {
+        echo json_encode(array("erreur" => "Le jeu est en pause !")); 
         exit;
     }
 

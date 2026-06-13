@@ -102,7 +102,11 @@
     </div>
 
     <h2 id="info_tour">Tour: Joueur 1 (En Bas)</h2>
-    <button id="btn_rejouer" class="btn-musique" style="display:none; background-color: #28a745;" onclick="recommencer_local()">🔄 Lancer une nouvelle partie</button>
+    <div style="margin-bottom: 20px;">
+        <button id="btn_pause" class="btn-musique" style="background-color: #f39c12;" onclick="togglePause()">⏸ Pause</button>
+        <button id="btn_abandon" class="btn-musique" style="background-color: #c0392b;" onclick="abandonner()">🏳️ Abandonner</button>
+        <button id="btn_rejouer" class="btn-musique" style="display:none; background-color: #28a745;" onclick="recommencer_local()">🔄 Lancer une nouvelle partie</button>
+    </div>
 
     <!-- Fichiers audios -->
     <audio id="bgMusic" src="../assets/african_song.mp3" loop preload="auto"></audio>
@@ -141,6 +145,8 @@
 
         var mode_ordinateur = false;
         var animation_en_cours = false;
+        var jeu_en_pause = false;
+        var jeu_termine = false;
 
         function sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
@@ -158,13 +164,52 @@
             plateau = [5,5,5,5,5,5,5, 5,5,5,5,5,5,5];
             score_joueurs = [0, 0];
             joueur_actuel = 0;
+            jeu_en_pause = false;
+            jeu_termine = false;
+            document.getElementById("btn_pause").style.display = "inline-block";
+            document.getElementById("btn_pause").innerHTML = "⏸ Pause";
+            document.getElementById("btn_abandon").style.display = "inline-block";
             document.getElementById("btn_rejouer").style.display = "none";
             document.getElementById("info_tour").style.color = "black";
             dessiner_plateau();
         }
 
+        function togglePause() {
+            if (jeu_termine) return;
+            jeu_en_pause = !jeu_en_pause;
+            var btn = document.getElementById("btn_pause");
+            if (jeu_en_pause) {
+                btn.innerHTML = "▶️ Reprendre";
+                btn.style.backgroundColor = "#27ae60";
+                document.getElementById('info_tour').innerHTML = "⏸ JEU EN PAUSE";
+                document.getElementById('info_tour').style.color = "#f39c12";
+            } else {
+                btn.innerHTML = "⏸ Pause";
+                btn.style.backgroundColor = "#f39c12";
+                document.getElementById('info_tour').style.color = "black";
+                dessiner_plateau(); // Rafraichir le message du tour
+                if (mode_ordinateur && joueur_actuel == 1) {
+                    setTimeout(jouer_ordinateur, 800);
+                }
+            }
+        }
+
+        function abandonner() {
+            if (jeu_termine) return;
+            jeu_termine = true;
+            jeu_en_pause = false;
+            var gagnant = (joueur_actuel == 0) ? 1 : 0;
+            var texte = (gagnant == 1) ? "Joueur 2 (Haut)" : "Joueur 1 (Bas)";
+            document.getElementById('info_tour').innerHTML = "🏳️ ABANDON ! " + texte + " a gagné.";
+            document.getElementById('info_tour').style.color = "red";
+            document.getElementById('btn_pause').style.display = "none";
+            document.getElementById('btn_abandon').style.display = "none";
+            document.getElementById('btn_rejouer').style.display = "inline-block";
+            dessiner_plateau();
+        }
+
         function jouer_ordinateur() {
-            if(joueur_actuel != 1 || animation_en_cours) return;
+            if(joueur_actuel != 1 || animation_en_cours || jeu_en_pause || jeu_termine) return;
             
             // on cherche tous les trous valides pour l'ordinateur
             var trous_valides = [];
@@ -200,7 +245,7 @@
         }
 
         async function jouer(index_trou) {
-            if(animation_en_cours) return;
+            if(animation_en_cours || jeu_en_pause || jeu_termine) return;
             document.getElementById('message_erreur').innerHTML = "";
             
             // verification si on peut jouer
@@ -325,8 +370,11 @@
                 
                 document.getElementById('info_tour').innerHTML = "🏆 JEU TERMINÉ : " + texte_gagnant;
                 document.getElementById('info_tour').style.color = "red";
+                document.getElementById('btn_pause').style.display = "none";
+                document.getElementById('btn_abandon').style.display = "none";
                 document.getElementById('btn_rejouer').style.display = "inline-block";
                 animation_en_cours = false;
+                jeu_termine = true;
                 return;
             }
 
@@ -360,7 +408,7 @@
                 var div_trou = document.createElement("div");
                 div_trou.className = "trou";
                 if(i === trou_actif) div_trou.className += " actif";
-                if(joueur_actuel == 0 || mode_ordinateur) div_trou.className += " bloque";
+                if(joueur_actuel == 0 || mode_ordinateur || jeu_en_pause || jeu_termine) div_trou.className += " bloque";
                 div_trou.innerHTML = plateau[i];
                 
                 // une closure pour garder la valeur de i
@@ -379,7 +427,7 @@
                 var div_trou = document.createElement("div");
                 div_trou.className = "trou";
                 if(i === trou_actif) div_trou.className += " actif";
-                if(joueur_actuel == 1) div_trou.className += " bloque";
+                if(joueur_actuel == 1 || jeu_en_pause || jeu_termine) div_trou.className += " bloque";
                 div_trou.innerHTML = plateau[i];
                 
                 (function(index) {
