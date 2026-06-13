@@ -146,7 +146,7 @@
 
         function recommencer() {
             var requete = new XMLHttpRequest();
-            requete.open("GET", "server.php?action=reset", true);
+            requete.open("GET", "../api/server.php?action=reset", true);
             requete.onload = function() {
                 demanderEtatAuServeur();
             };
@@ -161,7 +161,7 @@
             
             var requete = new XMLHttpRequest();
             // on envoie notre coup au php
-            requete.open("GET", "server.php?action=jouer&trou=" + index_trou + "&joueur=" + mon_id_joueur, true);
+            requete.open("GET", "../api/server.php?action=jouer&trou=" + index_trou + "&joueur=" + mon_id_joueur, true);
             requete.onload = function() {
                 var reponse = JSON.parse(requete.responseText);
                 if(reponse.erreur) {
@@ -180,7 +180,7 @@
         function demanderEtatAuServeur() {
             // on utilise XMLHttpRequest (AJAX classique pour faire "etudiant") plutot que fetch
             var xhr = new XMLHttpRequest();
-            xhr.open("GET", "server.php?action=recuperer_etat", true);
+            xhr.open("GET", "../api/server.php?action=recuperer_etat", true);
             xhr.onload = function() {
                 if(xhr.status == 200) {
                     var donnees = JSON.parse(xhr.responseText);

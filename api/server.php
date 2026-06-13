@@ -7,7 +7,7 @@ header('Content-Type: application/json');
 
 // ATTENTION POUR LINUX (XAMPP) : il faut donner les droits d'ecriture au fichier state.json !
 // commande a taper dans le terminal: chmod 777 state.json
-$fichier_etat = 'state.json';
+$fichier_etat = '/tmp/songo_state.json';
 
 // Si c'est la premiere fois on cree la partie
 if (!file_exists($fichier_etat) || (isset($_GET['action']) && $_GET['action'] == 'reset')) {
