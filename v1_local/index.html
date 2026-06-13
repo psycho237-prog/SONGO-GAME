@@ -102,6 +102,7 @@
     </div>
 
     <h2 id="info_tour">Tour: Joueur 1 (En Bas)</h2>
+    <button id="btn_rejouer" class="btn-musique" style="display:none; background-color: #28a745;" onclick="recommencer_local()">🔄 Lancer une nouvelle partie</button>
 
     <!-- Fichiers audios -->
     <audio id="bgMusic" src="../assets/african_song.mp3" loop preload="auto"></audio>
@@ -150,6 +151,15 @@
             if(mode_ordinateur && joueur_actuel == 1) {
                 setTimeout(jouer_ordinateur, 800);
             }
+            dessiner_plateau();
+        }
+
+        function recommencer_local() {
+            plateau = [5,5,5,5,5,5,5, 5,5,5,5,5,5,5];
+            score_joueurs = [0, 0];
+            joueur_actuel = 0;
+            document.getElementById("btn_rejouer").style.display = "none";
+            document.getElementById("info_tour").style.color = "black";
             dessiner_plateau();
         }
 
@@ -309,12 +319,13 @@
                 }
                 dessiner_plateau();
                 
-                var texte_gagnant = "Egalite";
-                if(score_joueurs[0] > score_joueurs[1]) texte_gagnant = "Le joueur 1 a gagne !";
-                if(score_joueurs[1] > score_joueurs[0]) texte_gagnant = "Le joueur 2 a gagne !";
+                var texte_gagnant = "Égalité !";
+                if(score_joueurs[0] > score_joueurs[1]) texte_gagnant = "Le joueur 1 (Bas) a gagné !";
+                if(score_joueurs[1] > score_joueurs[0]) texte_gagnant = "Le joueur 2 (Haut) a gagné !";
                 
-                alert("JEU TERMINE ! " + texte_gagnant);
-                document.getElementById('info_tour').innerHTML = texte_gagnant;
+                document.getElementById('info_tour').innerHTML = "🏆 JEU TERMINÉ : " + texte_gagnant;
+                document.getElementById('info_tour').style.color = "red";
+                document.getElementById('btn_rejouer').style.display = "inline-block";
                 animation_en_cours = false;
                 return;
             }

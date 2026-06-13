@@ -111,7 +111,7 @@
         </div>
 
         <br>
-        <button onclick="recommencer()">Reset de la partie</button>
+        <button id="btn_rejouer" class="btn-musique" style="display:none; background-color: #28a745;" onclick="recommencer()">🔄 Lancer une nouvelle partie</button>
     </div>
 
     <br><br>
@@ -269,10 +269,17 @@
             
             // on met le tour
             if(etat.le_gagnant !== null) {
-                if(etat.le_gagnant == 0) document.getElementById('info_tour').innerHTML = "FIN ! Le Joueur 1 gagne !";
-                else if(etat.le_gagnant == 1) document.getElementById('info_tour').innerHTML = "FIN ! Le Joueur 2 gagne !";
-                else document.getElementById('info_tour').innerHTML = "FIN ! Match Nul !";
+                var txt = "Égalité !";
+                if(etat.le_gagnant == 0) txt = "Le Joueur 1 (Bas) gagne !";
+                else if(etat.le_gagnant == 1) txt = "Le Joueur 2 (Haut) gagne !";
+
+                document.getElementById('info_tour').innerHTML = "🏆 JEU TERMINÉ : " + txt;
+                document.getElementById('info_tour').style.color = "red";
+                document.getElementById('btn_rejouer').style.display = "inline-block";
             } else {
+                document.getElementById('info_tour').style.color = "#008080";
+                document.getElementById('btn_rejouer').style.display = "none";
+
                 if(etat.joueur_qui_joue == 0) {
                     document.getElementById('info_tour').innerHTML = "C'est au Joueur 1 (Bas) de jouer";
                 } else {
