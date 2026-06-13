@@ -49,6 +49,14 @@
             background: #deb887;
         }
         
+        .actif {
+            background-color: #ffd700 !important;
+            transform: scale(1.1);
+            transition: 0.2s;
+            box-shadow: 0 0 10px #ff8c00;
+            border: 3px solid #ff8c00;
+        }
+        
         /* Classe quand ce n'est pas a nous de jouer */
         .bloque {
             opacity: 0.5;
@@ -131,6 +139,11 @@
         var trou_precedent = [1, 2, 3, 4, 5, 6, 13, 0, 7, 8, 9, 10, 11, 12];
 
         var mode_ordinateur = false;
+        var animation_en_cours = false;
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
 
         function changerMode(actif) {
             mode_ordinateur = actif;
@@ -141,7 +154,7 @@
         }
 
         function jouer_ordinateur() {
-            if(joueur_actuel != 1) return;
+            if(joueur_actuel != 1 || animation_en_cours) return;
             
             // on cherche tous les trous valides pour l'ordinateur
             var trous_valides = [];
@@ -162,20 +175,16 @@
             zik.play();
         }
 
-        function jouer(index_trou) {
+        async function jouer(index_trou) {
+            if(animation_en_cours) return;
             document.getElementById('message_erreur').innerHTML = "";
             
             // verification si on peut jouer
-            if(plateau[index_trou] == 0) {
-                // trou vide on fait rien
-                return;
-            }
-            if(joueur_actuel == 0 && index_trou > 6) {
-                return; // c pas son cote
-            }
-            if(joueur_actuel == 1 && index_trou < 7) {
-                return; // c pas son cote
-            }
+            if(plateau[index_trou] == 0) return;
+            if(joueur_actuel == 0 && index_trou > 6) return;
+            if(joueur_actuel == 1 && index_trou < 7) return;
+
+            animation_en_cours = true;
 
             // Jouer le son du clic des qu'on joue
             var clic = document.getElementById("clickSound");
@@ -185,6 +194,9 @@
             var nb_graines = plateau[index_trou];
             plateau[index_trou] = 0; // on vide la case
             
+            dessiner_plateau(index_trou);
+            await sleep(300);
+
             var position_actuelle = index_trou;
 
             // on distribue
@@ -198,6 +210,12 @@
                 
                 plateau[position_actuelle] = plateau[position_actuelle] + 1;
                 nb_graines--;
+                
+                clic.currentTime = 0;
+                clic.play();
+                
+                dessiner_plateau(position_actuelle);
+                await sleep(400); // Animation pause
             }
 
             // --- GESTION DES PRISES ---
@@ -241,6 +259,9 @@
                         } else {
                             total_capture = total_capture + graines_case;
                             plateau[pos_capture] = 0;
+                            
+                            dessiner_plateau(pos_capture); // Animation de la prise
+                            await sleep(400);
                         }
                     } else {
                         // si ca match pas on arrete la prise en chaine
@@ -253,6 +274,8 @@
                 
                 score_joueurs[joueur_actuel] += total_capture;
             }
+
+            dessiner_plateau(); // Enlever l'etat actif
 
             // verifier la fin du jeu
             var total_plateau = 0;
@@ -278,6 +301,7 @@
                 
                 alert("JEU TERMINE ! " + texte_gagnant);
                 document.getElementById('info_tour').innerHTML = texte_gagnant;
+                animation_en_cours = false;
                 return;
             }
 
@@ -290,6 +314,8 @@
             
             dessiner_plateau();
 
+            animation_en_cours = false;
+
             // Si c'est au tour de l'ordi
             if(joueur_actuel == 1 && mode_ordinateur) {
                 setTimeout(jouer_ordinateur, 800);
@@ -297,7 +323,7 @@
         }
 
         // Fonction pour afficher a lecran
-        function dessiner_plateau() {
+        function dessiner_plateau(trou_actif = -1) {
             var div_haut = document.getElementById('ligne_haut');
             var div_bas = document.getElementById('ligne_bas');
             
@@ -308,6 +334,7 @@
             for(var i=13; i>=7; i--) {
                 var div_trou = document.createElement("div");
                 div_trou.className = "trou";
+                if(i === trou_actif) div_trou.className += " actif";
                 if(joueur_actuel == 0 || mode_ordinateur) div_trou.className += " bloque";
                 div_trou.innerHTML = plateau[i];
                 
@@ -326,6 +353,7 @@
             for(var i=0; i<=6; i++) {
                 var div_trou = document.createElement("div");
                 div_trou.className = "trou";
+                if(i === trou_actif) div_trou.className += " actif";
                 if(joueur_actuel == 1) div_trou.className += " bloque";
                 div_trou.innerHTML = plateau[i];
                 
