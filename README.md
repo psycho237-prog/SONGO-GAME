@@ -29,7 +29,7 @@ Pour respecter la contrainte de **reproduction du code en 35 minutes**, l'algori
 
 ### Version 2 : Distant (Deux PC séparés)
 L'organisation adopte une architecture Client-Serveur "Ultra-Légère" (idéale pour un examen de 35 min) :
-- **Frontend (`index.php`)** : Gère l'affichage et l'interaction utilisateur. Contrairement à la V1, la logique du jeu n'y est pas présente. Les clics déclenchent des appels **AJAX** via la fonction native `fetch()`. Le client interroge le serveur toutes les secondes (`setInterval` -> "Short Polling") pour rafraîchir l'interface.
+- **Frontend (`index.html`)** : Gère l'affichage et l'interaction utilisateur. Contrairement à la V1, la logique du jeu n'y est pas présente. Les clics déclenchent des appels **AJAX** via la fonction native `fetch()`. Le client interroge le serveur toutes les secondes (`setInterval` -> "Short Polling") pour rafraîchir l'interface.
 - **Backend (`server.php`)** : Le contrôleur PHP qui contient tout l'algorithme du jeu (semaille, prise, changement de tour).
 - **Base de Données (`state.json`)** : Au lieu d'une lourde base de données SQL (difficile à mettre en place rapidement), l'état global du jeu est sérialisé en JSON dans un fichier texte. C'est rapide, performant pour deux joueurs, et s'écrit en 2 lignes de PHP (`file_get_contents` / `file_put_contents`).
 
