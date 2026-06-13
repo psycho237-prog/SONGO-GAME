@@ -81,7 +81,7 @@
     <h1>Le jeu de Songo - AJAX Multi</h1>
     
     <!-- Bouton pour la musique de fond -->
-    <button class="btn-musique" onclick="demarrerMusique()">🎵 Lancer la musique africaine</button>
+    <button class="btn-musique" id="btn_musique" onclick="toggleMusique()">🎵 Lancer la musique</button>
     
     <!-- Fichiers audios -->
     <audio id="bgMusic" src="../assets/african_song.mp3" loop preload="auto"></audio>
@@ -123,10 +123,24 @@
         var mon_id_joueur = -1; // pas encore choisi
         var nom_salle = "";
 
-        // Fonction pour demarrer la musique
-        function demarrerMusique() {
+        var musique_en_cours = false;
+
+        // Fonction pour gerer la musique
+        function toggleMusique() {
             var zik = document.getElementById("bgMusic");
-            zik.play();
+            var btn = document.getElementById("btn_musique");
+            
+            if(musique_en_cours) {
+                zik.pause();
+                musique_en_cours = false;
+                btn.innerHTML = "🎵 Lancer la musique";
+                btn.style.backgroundColor = "#008080";
+            } else {
+                zik.play();
+                musique_en_cours = true;
+                btn.innerHTML = "🔇 Couper la musique";
+                btn.style.backgroundColor = "#cd5c5c";
+            }
         }
 
         function choisirJoueur(id) {
