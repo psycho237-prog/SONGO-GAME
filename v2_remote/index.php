@@ -57,11 +57,29 @@
             cursor: pointer;
             margin: 10px;
         }
+        
+        /* Style pour le bouton musique */
+        .btn-musique {
+            background-color: #008080;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
 
     <h1>Le jeu de Songo - AJAX Multi</h1>
+    
+    <!-- Bouton pour la musique de fond -->
+    <button class="btn-musique" onclick="demarrerMusique()">🎵 Lancer la musique africaine</button>
+    
+    <!-- Fichiers audios -->
+    <audio id="bgMusic" src="../assets/african_song.mp3" loop></audio>
+    <audio id="clickSound" src="../assets/click.mp3"></audio>
     
     <div id="choix_joueur">
         <h2>Qui es-tu ?</h2>
@@ -98,6 +116,12 @@
         
         var mon_id_joueur = -1; // pas encore choisi
 
+        // Fonction pour demarrer la musique
+        function demarrerMusique() {
+            var zik = document.getElementById("bgMusic");
+            zik.play();
+        }
+
         function choisirJoueur(id) {
             mon_id_joueur = id;
             document.getElementById('choix_joueur').style.display = 'none';
@@ -109,8 +133,8 @@
                 document.getElementById('mon_role').innerHTML = "Joueur 2 (En Haut)";
             }
             
-            // on lance la requete ajax en boucle (Polling toutes les secondes)
-            setInterval(demanderEtatAuServeur, 1000);
+            // on lance la requete ajax en boucle tres vite (200ms) pour reduire la latence
+            setInterval(demanderEtatAuServeur, 200);
             demanderEtatAuServeur();
         }
 
@@ -124,6 +148,11 @@
         }
 
         function cliquerTrou(index_trou) {
+            // Jouer le son du clic
+            var clic = document.getElementById("clickSound");
+            clic.currentTime = 0;
+            clic.play();
+            
             var requete = new XMLHttpRequest();
             // on envoie notre coup au php
             requete.open("GET", "server.php?action=jouer&trou=" + index_trou + "&joueur=" + mon_id_joueur, true);

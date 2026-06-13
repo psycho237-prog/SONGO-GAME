@@ -60,12 +60,31 @@
         }
         
         .footer { margin-top: 50px; font-size: 12px; }
+        
+        /* Bouton pour demarrer la musique */
+        .btn-musique {
+            background-color: #8b4513;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
 
     <h1>Le jeu de Songo</h1>
+    
+    <!-- Bouton pour lancer la musique de fond (les navigateurs bloquent la lecture auto) -->
+    <button class="btn-musique" onclick="demarrerMusique()">🎵 Lancer la musique africaine</button>
+    
     <h2 id="info_tour">Tour: Joueur 1 (En Bas)</h2>
+
+    <!-- Fichiers audios -->
+    <audio id="bgMusic" src="../assets/african_song.mp3" loop></audio>
+    <audio id="clickSound" src="../assets/click.mp3"></audio>
     
     <div id="message_erreur"></div>
 
@@ -98,6 +117,12 @@
         // pour calculer les prises on a besoin du sens inverse
         var trou_precedent = [1, 2, 3, 4, 5, 6, 13, 0, 7, 8, 9, 10, 11, 12];
 
+        // Fonction pour demarrer la musique (a cause de la securite du navigateur)
+        function demarrerMusique() {
+            var zik = document.getElementById("bgMusic");
+            zik.play();
+        }
+
         function jouer(index_trou) {
             document.getElementById('message_erreur').innerHTML = "";
             
@@ -112,6 +137,11 @@
             if(joueur_actuel == 1 && index_trou < 7) {
                 return; // c pas son cote
             }
+
+            // Jouer le son du clic des qu'on joue
+            var clic = document.getElementById("clickSound");
+            clic.currentTime = 0; // remettre a zero pour rejouer vite
+            clic.play();
 
             var nb_graines = plateau[index_trou];
             plateau[index_trou] = 0; // on vide la case
