@@ -1,0 +1,15 @@
+{
+    "functions": {
+        "*.php": {
+            "runtime": "vercel-php@0.6.2"
+        },
+        "v2_remote/*.php": {
+            "runtime": "vercel-php@0.6.2"
+        }
+    },
+    "routes": [
+        { "src": "/v1_local/(.*)", "dest": "/v1_local/$1" },
+        { "src": "/v2_remote/(.*)", "dest": "/v2_remote/$1" },
+        { "src": "/(.*)", "dest": "/$1" }
+    ]
+}

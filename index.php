@@ -2,13 +2,18 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Projet Songo - ONANA GREGOIRE LEGRAND (24G2060)</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; background-color: #f5deb3; padding: 50px; }
         h1 { color: #8b4513; }
-        .menu { display: flex; justify-content: center; gap: 20px; margin-top: 50px; }
-        .btn { padding: 20px 40px; font-size: 20px; text-decoration: none; color: white; background-color: #cd853f; border-radius: 10px; border: 2px solid saddlebrown; transition: 0.3s; }
+        .menu { display: flex; flex-direction: column; align-items: center; gap: 20px; margin-top: 50px; }
+        .btn { padding: 15px 20px; font-size: 18px; text-decoration: none; color: white; background-color: #cd853f; border-radius: 10px; border: 2px solid saddlebrown; transition: 0.3s; width: 80%; max-width: 300px; }
         .btn:hover { background-color: #8b4513; }
+        @media (min-width: 600px) {
+            .menu { flex-direction: row; justify-content: center; }
+            .btn { padding: 20px 40px; font-size: 20px; width: auto; }
+        }
     </style>
 </head>
 <body>

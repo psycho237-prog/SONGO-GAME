@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Songo - Multi Joueur (AJAX)</title>
     <!-- Auteur: ONANA GREGOIRE LEGRAND | Matricule: 24G2060 -->
     <style>
@@ -14,10 +15,12 @@
         
         .le_plateau {
             background: #20b2aa;
-            width: 700px;
+            width: 90%;
+            max-width: 700px;
             margin: 0 auto;
             padding: 15px;
             border-radius: 10px;
+            box-sizing: border-box;
         }
         
         .ligne {
@@ -27,14 +30,17 @@
         }
         
         .trou {
-            width: 50px;
-            height: 50px;
+            width: 10vw;
+            height: 10vw;
+            max-width: 50px;
+            max-height: 50px;
             background: #e0ffff;
             border-radius: 50%;
             border: 2px solid teal;
-            text-align: center;
-            line-height: 50px;
-            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(14px, 4vw, 20px);
             font-weight: bold;
             cursor: pointer;
         }
@@ -79,7 +85,7 @@
     
     <!-- Fichiers audios -->
     <audio id="bgMusic" src="../assets/african_song.mp3" loop></audio>
-    <audio id="clickSound" src="../assets/click.mp3"></audio>
+    <audio id="clickSound" src="../assets/click.wav"></audio>
     
     <div id="choix_joueur">
         <h2>Qui es-tu ?</h2>
