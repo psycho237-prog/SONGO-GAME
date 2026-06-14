@@ -27,5 +27,10 @@ echo Ne fermez pas cette fenetre noire pendant la partie !
 echo ===================================================
 
 start http://localhost:8080
-php -S 0.0.0.0:8080
+if exist "php\php.exe" (
+    echo Utilisation de la version portable de PHP...
+    php\php.exe -S 0.0.0.0:8080
+) else (
+    php -S 0.0.0.0:8080
+)
 pause
